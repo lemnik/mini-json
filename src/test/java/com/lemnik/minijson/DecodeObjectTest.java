@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DecodeObjectTest {
     @Test
-    public void simpleObject() throws IOException {
+    void simpleObject() throws IOException {
         Object result = new JsonDecoder("{\"yes\": true, \"no\": false}").nextJsonValue();
 
         Map<String, Object> expected = new LinkedHashMap<>();
@@ -25,13 +25,13 @@ class DecodeObjectTest {
     }
 
     @Test
-    public void emptyObject() throws IOException {
+    void emptyObject() throws IOException {
         Object result = new JsonDecoder("{}").nextJsonValue();
         assertThat(result, is(emptyMap()));
     }
 
     @Test
-    public void nestedObject() throws IOException {
+    void nestedObject() throws IOException {
         Object result = new JsonDecoder("{\"array\": [1, 2, 3], \"object\": {\"yes\": true}}").nextJsonValue();
 
         Map<String, Object> expected = new LinkedHashMap<>();
@@ -45,12 +45,12 @@ class DecodeObjectTest {
     }
 
     @Test
-    public void incompleteObject() {
+    void incompleteObject() {
         assertThrows(IOException.class, () -> new JsonDecoder("{\"yes\": true").nextJsonValue());
     }
 
     @Test
-    public void malformedObject() {
+    void malformedObject() {
         assertThrows(IOException.class, () -> new JsonDecoder("{\"yes\"; true").nextJsonValue());
     }
 }

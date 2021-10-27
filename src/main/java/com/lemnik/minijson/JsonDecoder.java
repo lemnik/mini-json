@@ -18,7 +18,7 @@ public class JsonDecoder {
      */
     private final StringBuilder sharedStringBuilder = new StringBuilder();
 
-    protected PushbackReader reader;
+    protected final PushbackReader reader;
 
     public JsonDecoder(Reader reader) {
         this.reader = new PushbackReader(Objects.requireNonNull(reader, "reader"));
@@ -169,7 +169,7 @@ public class JsonDecoder {
      * Reads a String literal assuming that the Reader is currently positioned on the first character of the String,
      * or the closing quote of an empty String.
      */
-    private String readStringLiteral() throws IOException {
+    private Object readStringLiteral() throws IOException {
         sharedStringBuilder.setLength(0);
 
         boolean reading = true;
@@ -195,9 +195,9 @@ public class JsonDecoder {
     }
 
     private Number readNumber(int codePoint) throws IOException {
-        // FIXME: This implementation is incomplete - and could also be much faster
         sharedStringBuilder.setLength(0);
 
+        // FIXME: This implementation could also be much faster - it's pretty rubbish right now
         if (codePoint == '-' || codePoint == '+' || (codePoint >= '0' && codePoint <= '9')) {
             sharedStringBuilder.appendCodePoint(codePoint);
         } else {
@@ -205,9 +205,21 @@ public class JsonDecoder {
             throw new IOException("unexpected '" + (char) codePoint + '\'');
         }
 
+        boolean hasExponent = false;
+
         while ((codePoint = reader.read()) != -1) {
             if (codePoint == '.' || (codePoint >= '0' && codePoint <= '9')) {
                 sharedStringBuilder.appendCodePoint(codePoint);
+            } else if (codePoint == 'e' || codePoint == 'E' && !hasExponent) {
+                hasExponent = true;
+                sharedStringBuilder.appendCodePoint(codePoint);
+
+                codePoint = reader.read();
+                if (codePoint == '-' || codePoint == '+' || (codePoint >= '0' && codePoint <= '9')) {
+                    sharedStringBuilder.appendCodePoint(codePoint);
+                } else {
+                    throw new IOException("unexpected character in exponent: '" + (char) codePoint + '\'');
+                }
             } else {
                 break;
             }
@@ -308,14 +320,19 @@ public class JsonDecoder {
     }
 
     /**
+     * <p>
      * Last stage before returning a parsed {@code String}, whether a literal value or property key. The
      * {@code CharSequence} passed here must not be cached and may be reused. If you want to introduce any
      * String caching or additional processing, overload this method.
+     * </p><p>
+     * Strings are often used in JSON to store non-string values (such as Dates, Binary Strings in Base64 encoding, etc.).
+     * As such, this method does not assume a {@code String} return-type and allows for other types to be returned.
+     * </p>
      *
      * @param buffer the content of the string
-     * @return
+     * @return the value of the parsed {@code String}
      */
-    protected String parseString(CharSequence buffer) {
+    protected Object parseString(CharSequence buffer) {
         return buffer.length() != 0 ? buffer.toString() : "";
     }
 

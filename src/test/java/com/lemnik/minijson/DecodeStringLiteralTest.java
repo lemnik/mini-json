@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DecodeStringLiteralTest {
     @Test
-    public void simpleStringLiteral() throws IOException {
+    void simpleStringLiteral() throws IOException {
         Object result = new JsonDecoder("\"String literal here\"").nextJsonValue();
         assertThat(result, is("String literal here"));
     }
 
     @Test
-    public void escapeSequences() throws IOException {
+    void escapeSequences() throws IOException {
         /*
          escape
             '"'
@@ -33,13 +33,13 @@ class DecodeStringLiteralTest {
     }
 
     @Test
-    public void unicodeStringLiteral() throws IOException {
+    void unicodeStringLiteral() throws IOException {
         Object result = new JsonDecoder("\"Привет 你好 안녕하십니까 今日は！\"").nextJsonValue();
         assertThat(result, is("Привет 你好 안녕하십니까 今日は！"));
     }
 
     @Test
-    public void unicodeEscape_Uppercase() throws IOException {
+    void unicodeEscape_Uppercase() throws IOException {
         Object result = new JsonDecoder("" +
                 "\"\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442\\u0020\\u4F60\\u597D\\u0020" +
                 "\\uC548\\uB155\\uD558\\uC2ED\\uB2C8\\uAE4C\\u0020\\u4ECA\\u65E5\\u306F\\uFF01\""
@@ -48,7 +48,7 @@ class DecodeStringLiteralTest {
     }
 
     @Test
-    public void unicodeEscape_Lowercase() throws IOException {
+    void unicodeEscape_Lowercase() throws IOException {
         Object result = new JsonDecoder("" +
                 "\"\\u041f\\u0440\\u0438\\u0432\\u0435\\u0442\\u0020\\u4f60\\u597d\\u0020" +
                 "\\uc548\\ub155\\ud558\\uc2ed\\ub2c8\\uae4c\\u0020\\u4eca\\u65e5\\u306f\\uff01\""
@@ -57,12 +57,12 @@ class DecodeStringLiteralTest {
     }
 
     @Test
-    public void badEscapeCharacter() {
+    void badEscapeCharacter() {
         assertThrows(IOException.class, () -> new JsonDecoder("\"\\k\"").nextJsonValue());
     }
 
     @Test
-    public void badUnicodeEscapes() {
+    void badUnicodeEscapes() {
         assertThrows(IOException.class, () -> new JsonDecoder("\"\\uZFDC\"").nextJsonValue());
         assertThrows(IOException.class, () -> new JsonDecoder("\"\\u;[]1\"").nextJsonValue());
         assertThrows(IOException.class, () -> new JsonDecoder("\"\\u0f\"").nextJsonValue());

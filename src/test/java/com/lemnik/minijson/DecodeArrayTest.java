@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DecodeArrayTest {
     @Test
-    public void arrayWithLiterals() throws IOException {
+    void arrayWithLiterals() throws IOException {
         Object result = new JsonDecoder("[321, false, true, null, \"test string\", 123.45]").nextJsonValue();
         assertThat(
                 (Iterable<Object>) result,
@@ -29,7 +29,7 @@ class DecodeArrayTest {
     }
 
     @Test
-    public void arrayOfArrays() throws IOException {
+    void arrayOfArrays() throws IOException {
         Object result = new JsonDecoder("[321, [123, 456], []]").nextJsonValue();
         assertThat(
                 (Iterable<Object>) result,
@@ -45,18 +45,18 @@ class DecodeArrayTest {
     }
 
     @Test
-    public void emptyArray() throws IOException {
+    void emptyArray() throws IOException {
         Object result = new JsonDecoder("[]").nextJsonValue();
         assertThat(result, is(emptyList()));
     }
 
     @Test
-    public void unclosedArray() {
+    void unclosedArray() {
         assertThrows(IOException.class, () -> new JsonDecoder("[123, 432").nextJsonValue());
     }
 
     @Test
-    public void emptyArrayElements() {
+    void emptyArrayElements() {
         assertThrows(IOException.class, () -> new JsonDecoder("[,,123,]").nextJsonValue());
     }
 }
