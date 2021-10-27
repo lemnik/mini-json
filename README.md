@@ -2,8 +2,6 @@
 
 Really small, really fast, really specific JSON parser for the JVM. Written in Java but nice for Kotlin.
 
-**WIP** - Currently only decoding a subset of JSON is supported, and no encoder exists
-
 ### Why?
 
 Because the JVM needs another JSON parser that keeps things small and fast. This parser decodes to `Map`, `List` and
